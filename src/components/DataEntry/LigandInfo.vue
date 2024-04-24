@@ -39,14 +39,7 @@
 
         <!-- Ligand Formula -->
         <v-col cols="12" md="6">
-            <v-text-field
-                label="Ligand Molecular Formula"
-                prepend-icon="mdi-gold"
-                variant="solo"
-                :loading="isLoading ?? false"
-                @change="entry('ligand_molecular_formula', ligand_molecular_formula)"
-                v-model:model-value="ligand_molecular_formula"
-            ></v-text-field>
+            <ChemInput :ligandMolecularFormula="ligand_molecular_formula" @compute-formula="entry('ligand_molecular_formula', $event)" @compute-charge="entry('ligand_charge', $event)"/>
         </v-col>
 
         <!-- Ligand Charge -->
@@ -77,6 +70,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
+import ChemInput from './ChemInput.vue';
 
 export default defineComponent ({
     name: "LigandInfo",
@@ -86,6 +80,7 @@ export default defineComponent ({
             default: false
         }
     },
+    components: {ChemInput},
     data: () => ({
         ligand_name: '',
         molecular_formula_charge: '',
@@ -98,6 +93,7 @@ export default defineComponent ({
     methods: {
         entry(fieldToChange: String, dataToSend: any) {
             this.$emit('entry', {'fieldToChange': fieldToChange, 'dataToSend': dataToSend})
+            // console.log(fieldToChange, dataToSend)
         }
     }
 })
