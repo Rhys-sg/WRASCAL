@@ -301,7 +301,13 @@ export function updateText(event) {
 }
 
 export function removePlaceholder(event) {
-    if (this.input === 'Ligand Molecular Formula') {
+    if (this.input === this.name) {
     this.input = '';
+    }
+}
+
+export function addPlaceholder(event) {
+    if (this.input === '') {
+    this.input = this.name;
     }
 }

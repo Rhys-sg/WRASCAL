@@ -32,20 +32,25 @@
             cols="12"
             md = "6"
             >
-                <v-text-field
+                <ChemInput
+                :name="formula_string_name"
+                @compute-formula="entry('ligand_molecular_formula', $event)"
+                @compute-charge="entry('ligand_charge', $event)"/>
+                <!-- <v-text-field
                 label="Formula String"
                 prepend-icon="mdi-gold"
                 variant="solo"
                 :loading="isLoading ?? false"
                 @change="entry('metal_formula_string', metal_formula_string)"
                 v-model:model-value="metal_formula_string"
-                ></v-text-field>
+                ></v-text-field> -->
             </v-col>
         </v-row>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import ChemInput from './ChemInput.vue';
 
 export default defineComponent ({
     name: "MetalInfo",
@@ -55,11 +60,13 @@ export default defineComponent ({
             default: false
         }
     },
+    components: {ChemInput},
     data: () => ({
         metal_id: '',
         metal_central_element: '',
         metal_formula_string: '',
-        metal_charge: ''
+        metal_charge: '',
+        formula_string_name: 'Formula String',
     }),
     methods: {
         // Data must be sent as {string, data} because the other end uses javascript tomshittery to
