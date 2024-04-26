@@ -29,7 +29,7 @@
   </div>
   <!-- Popup content -->
   <div v-if="showingPopup" class="popup">
-    The WRASCAL database can only parse chemical equations in a standardized syntax. It cannot read 
+    The WRASCAL database can only parse chemical formulas in a standardized syntax. It cannot read 
     super or subscript. Use the given buttons to input compounds, then press the "convert" button to 
     automatically generate the input. This format includes a paired list of elements and their total 
     charge. Click the button again to revert the output to a standard chemical equation.
