@@ -1,17 +1,27 @@
 <template>
-    <div class="input-container">
-        <div class="icon-wrapper">
-          <span class="mdi mdi-gold prepend-icon"></span>
-        </div>
-        <div contenteditable="true" v-html="input" class="text-box" ref="myTextBox" @input="updateText" @click="removePlaceholder" @blur="addPlaceholder" @keydown="updateText" @keyup="updateText" @mouseup="updateText"></div>
-        <div class="button-container">
-        <button :class="{ 'highlighted': activeButton === 'normal_button' }" @click="surroundTextWithTag('normal_button')">X</button>
-        <button :class="{ 'highlighted': activeButton === 'sup_button' }" @click="surroundTextWithTag('sup_button')">X<sup>y</sup></button>
-        <button :class="{ 'highlighted': activeButton === 'sub_button' }" @click="surroundTextWithTag('sub_button')">X<sub>y</sub></button>
-        <!-- <button :class="{ 'highlighted': activeButton === 'stack_button' }" @click="surroundTextWithboth()">X<span class="buttonstacked"><sup>z</sup><sub>y</sub></span></button> -->
-        <button :class="{ 'highlighted': activeButton === 'compute_button' }" @click="this.input =compute(this.displayText)">Compute</button>
-      </div>
+  <div class="input-container">
+    <div v-if="showingPopup" class="overlay" @click="hidePopup"></div>
+    <div class="icon-wrapper">
+      <span class="mdi mdi-gold prepend-icon"></span>
     </div>
+    <div contenteditable="true" v-html="input" class="text-box" ref="myTextBox" @input="updateText" @click="removePlaceholder" @keydown="updateText" @keyup="updateText" @mouseup="updateText"></div>
+    <div class="button-container">
+      <button class="question-button" @click="showPopup">?</button>
+      <button :class="{ 'highlighted': activeButton === 'normal_button' }" @click="surroundTextWithTag('normal_button')">X</button>
+      <button :class="{ 'highlighted': activeButton === 'sup_button' }" @click="surroundTextWithTag('sup_button')">X<sup>y</sup></button>
+      <button :class="{ 'highlighted': activeButton === 'sub_button' }" @click="surroundTextWithTag('sub_button')">X<sub>y</sub></button>
+      <button :class="{ 'highlighted': activeButton === 'compute_button' }" @click="this.input = compute(this.displayText)">
+        {{ isConverted ? 'Revert' : 'Convert' }}
+      </button>
+    </div>
+  </div>
+  <!-- Popup content -->
+  <div v-if="showingPopup" class="popup">
+    The WRASCAL database can only parse chemical equations in a standardized syntax. It cannot read 
+    super or subscript. Use the given buttons to input compounds, then press the "convert" button to 
+    automatically generate a readable string. Click the button again to revert the output to a standard chemical equation.
+    <button class="close-button" @click="hidePopup">Close</button>
+  </div>
 </template>
 <script>
 import { defineComponent } from 'vue';
@@ -29,7 +39,6 @@ import {
   removeTemplateLiterals,
   updateText,
   removePlaceholder,
-  addPlaceholder
 } from './ChemInputMethods.js';
 
 export default defineComponent({
@@ -58,7 +67,10 @@ export default defineComponent({
         "Ba", "La", "Ce", "Pr", "Nd", "Pm", "Sm", "Eu", "Gd", "Tb", "Dy", "Ho", "Er", "Tm", "Yb", "Lu", "Hf", "Ta",
         "W", "Re", "Os", "Ir", "Pt", "Au", "Hg", "Tl", "Pb", "Bi", "Po", "At", "Rn", "Fr", "Ra", "Ac", "Th", "Pa",
         "U", "Np", "Pu", "Am", "Cm", "Bk", "Cf", "Es", "Fm", "Md", "No", "Lr", "Rf", "Db", "Sg", "Bh", "Hs", "Mt"
-    ])  
+    ]),
+    showingPopup: false,
+    isConverted: false,
+    previous: '',
     };
   },
   methods: {
@@ -74,7 +86,14 @@ export default defineComponent({
     removeTemplateLiterals,
     updateText,
     removePlaceholder,
-    addPlaceholder,
+    // Method to show the popup
+    showPopup() {
+      this.showingPopup = true;
+    },
+    // Method to hide the popup
+    hidePopup() {
+      this.showingPopup = false;
+    },
   }
 });
 </script>
@@ -175,6 +194,87 @@ export default defineComponent({
 
 .stacked sub {
   bottom: -1.25em;
+}
+
+.button-container {
+  position: relative; /* Set the button container as a reference for absolute positioning */
+  display: flex;
+  justify-content: flex-start; /* Align buttons to the left */
+}
+
+.button-container button.question-button {
+  position: absolute;
+  top: 15%;
+  left: -35px;
+  transform: translateY(-50%);
+  padding: 2px;
+  border: none;
+  border-radius: 50%;
+  background-color: #007bff;
+  color: #fff;
+  font-size: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+  z-index: 9998; /* Lower z-index than the popup */
+}
+
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--v-theme-on-background);
+  background-color: rgb(40, 40, 40);
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.v-theme--dark .popup {
+  background-color: rgb(40, 40, 40);
+  color: white;
+}
+
+.v-theme--light .popup {
+  background-color: white;
+  color: black;
+}
+
+.close-button {
+  margin-top: 20px;
+  padding: 8px 16px;
+  border: 1px solid #007bff;
+  border-radius: 5px;
+  background-color: #007bff;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.close-button:hover {
+  background-color: #0056b3;
+  border-color: #0056b3;
 }
 
 </style>
