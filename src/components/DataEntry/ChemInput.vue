@@ -4,7 +4,19 @@
     <div class="icon-wrapper">
       <span class="mdi mdi-gold prepend-icon"></span>
     </div>
-    <div contenteditable="true" v-html="input" class="text-box" ref="myTextBox" @input="updateText" @click="removePlaceholder" @keydown="updateText" @keyup="updateText" @mouseup="updateText"></div>
+    <div
+      contenteditable="true"
+      v-html="input"
+      class="text-box"
+      ref="myTextBox"
+      @input="updateText"
+      @click="removePlaceholder"
+      @keydown="updateText"
+      @keyup="updateText"
+      @mouseup="updateText"
+      @blur="addPlaceholder"
+      :style="{ width: this.width }" 
+    ></div>
     <div class="button-container">
       <button class="question-button" @click="showPopup">?</button>
       <button :class="{ 'highlighted': activeButton === 'normal_button' }" @click="surroundTextWithTag('normal_button')">X</button>
@@ -19,7 +31,8 @@
   <div v-if="showingPopup" class="popup">
     The WRASCAL database can only parse chemical equations in a standardized syntax. It cannot read 
     super or subscript. Use the given buttons to input compounds, then press the "convert" button to 
-    automatically generate a readable string. Click the button again to revert the output to a standard chemical equation.
+    automatically generate the input. This format includes a paired list of elements and their total 
+    charge. Click the button again to revert the output to a standard chemical equation.
     <button class="close-button" @click="hidePopup">Close</button>
   </div>
 </template>
@@ -39,11 +52,17 @@ import {
   removeTemplateLiterals,
   updateText,
   removePlaceholder,
+  addPlaceholder,
+  showPopup,
+  hidePopup,
 } from './ChemInputMethods.js';
 
 export default defineComponent({
   props: {
     name: {
+      type: String,
+    },
+    width: {
       type: String,
     }
   },
@@ -86,14 +105,9 @@ export default defineComponent({
     removeTemplateLiterals,
     updateText,
     removePlaceholder,
-    // Method to show the popup
-    showPopup() {
-      this.showingPopup = true;
-    },
-    // Method to hide the popup
-    hidePopup() {
-      this.showingPopup = false;
-    },
+    addPlaceholder,
+    showPopup,
+    hidePopup,
   }
 });
 </script>
@@ -197,9 +211,9 @@ export default defineComponent({
 }
 
 .button-container {
-  position: relative; /* Set the button container as a reference for absolute positioning */
+  position: relative;
   display: flex;
-  justify-content: flex-start; /* Align buttons to the left */
+  justify-content: flex-start;
 }
 
 .button-container button.question-button {
@@ -228,8 +242,8 @@ export default defineComponent({
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
-  z-index: 9998; /* Lower z-index than the popup */
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 9998;
 }
 
 .popup {
