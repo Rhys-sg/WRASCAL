@@ -238,7 +238,6 @@ export function unstackText(input) {
  * @returns {[string, number]} An array containing the original input string and the net charge calculated from the annotations.
  */
 export function calculateCharge(input) {
-    console.log(input);
     let charge = 0;
     let currentCharge_int = 0;
     let currentCharge = '';
@@ -249,7 +248,6 @@ export function calculateCharge(input) {
             currentCharge += input[i];
             i++;
         }
-        console.log(currentCharge);
         if (currentCharge === '-') {
             charge -= 1;
         } else if (currentCharge === '+') {
