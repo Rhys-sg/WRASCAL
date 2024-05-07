@@ -348,7 +348,7 @@ export function removePlaceholder(event) {
 }
 
 /**
- * Adds placeholder text to the text box if it is empty.
+ * Adds placeholder text to the text box if it is empty. 
  * 
  * @param {Event} event - The event object triggering the function.
  */
